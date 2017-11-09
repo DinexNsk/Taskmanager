@@ -68,6 +68,14 @@ export default class AddTaskModal extends Component {
         }
       }
 
+    async _dateTime(){
+        try {
+            let getDate = await this.openAndroidDatePicker();
+            let getTime = await this.openAndroidTimePicker();
+        } catch (error) {
+            console.log(error)
+        }    
+    }
 
     render() {
         const clearState = {};
@@ -121,9 +129,7 @@ export default class AddTaskModal extends Component {
                 <View style={[styles.textInput,styles.dateTime]}>
                     <Text 
                         style={{width:60, height:60}}
-                        onPress = {()=>
-                            this.openAndroidTimePicker().then(
-                            this.openAndroidDatePicker())}>
+                        onPress = {()=>this._dateTime()}>
                     <Icon name="calendar"
                         size={40}
                         color='black'
