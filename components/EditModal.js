@@ -7,7 +7,10 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
+
+import myStyles from './styles'
 import flatListData from '../data/flatListData';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 var screen = Dimensions.get('window');
 export default class EditModal extends Component {
@@ -16,9 +19,10 @@ export default class EditModal extends Component {
         this.state = {
             taskName: '',
             taskDescription: '',
-            taskPriority:'',
+            newPriority:'',
             taskMustComplete:'',
             taskIsComplete:false,
+            taskWasCompleted:''
         };
     }
     showEditModal = (editingTask, flatlistItem) => {     
@@ -27,9 +31,10 @@ export default class EditModal extends Component {
             key: editingTask.key,
             taskName: editingTask.name,
             taskDescription: editingTask.taskDescription,
-            taskPriority: editingTask.priority,
+            newPriority: editingTask.priority,
             taskMustComplete:editingTask.taskMustComplete,
             taskIsComplete:editingTask.taskIsComplete,
+            taskWasCompleted:editingTask.taskWasCompleted,
             flatlistItem: flatlistItem
         });
         this.refs.myModal.open();
@@ -41,68 +46,35 @@ export default class EditModal extends Component {
         return (
             <Modal
                 ref={"myModal"}
-                style={{
-                    justifyContent: 'center',
-                    borderRadius: Platform.OS === 'ios' ? 30 : 0,
-                    shadowRadius: 10,
-                    width: screen.width - 80,
-                    height: 280
-                }}
+                style={myStyles.modal}
                 position='center'
                 backdrop={true}
                 onClosed={() => {
                     // alert("Modal closed");
                 }}
             >
-                <Text style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    marginTop: 40
-                }}>Editing task</Text>
+                <Text style={myStyles.header}>Editing task</Text>
                 <TextInput
-                    style={{
-                        height: 40,
-                        borderBottomColor: 'gray',
-                        marginLeft: 30,
-                        marginRight: 30,
-                        marginTop: 20,
-                        marginBottom: 10,
-                        borderBottomWidth: 1
-                    }}           
+                    style={myStyles.textInput}           
                     onChangeText={(text) => this.setState({ taskName: text })}
-                    placeholder="Enter food's name"
+                    placeholder="Edit task's name"
                     value={this.state.taskName}                 
                 />
                 <TextInput
-                    style={{
-                        height: 40,
-                        borderBottomColor: 'gray',
-                        marginLeft: 30,
-                        marginRight: 30,
-                        marginTop: 10,
-                        marginBottom: 20,
-                        borderBottomWidth: 1
-                    }}
-                    
+                    style={myStyles.textInput}           
                     onChangeText={(text) => this.setState({ taskDescription: text })}
-                    placeholder="Enter food's description"
-                    value={this.state.taskDescription}
+                    placeholder="Edit task's description"
+                    value={this.state.taskDescription}                 
                 />
-                <TextInput
-                    style={{
-                        height: 40,
-                        borderBottomColor: 'gray',
-                        marginLeft: 30,
-                        marginRight: 30,
-                        marginTop: 10,
-                        marginBottom: 20,
-                        borderBottomWidth: 1
-                    }}
-                    
-                    onChangeText={(text) => this.setState({ taskPriority: text })}
-                    placeholder="Enter task priority"
-                    value={this.state.taskPriority}
+                <ModalDropdown
+                    showsVerticalScrollIndicator={false}
+                    style={myStyles.textInput}
+                    textStyle={myStyles.text}
+                    dropdownStyle={myStyles.dropdown}
+                    dropdownTextStyle = {myStyles.dropdownText}
+                    animated={false}
+                    options={['usual', 'important', 'very important']}
+                    onSelect = {(idx, value) => this.setState({newPriority:value})}
                 />
                 <Button
                     style={{ fontSize: 18, color: 'white' }}
