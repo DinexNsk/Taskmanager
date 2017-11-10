@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { 
     AppRegistry, FlatList, StyleSheet,
     Text, View, Image, Alert, Platform,
-    TouchableHighlight, StatusBar, Dimensions,  } from 'react-native';
+    TouchableHighlight, StatusBar, Dimensions, Button,  } from 'react-native';
 import flatListData from '../data/flatListData';
 import Swipeout from 'react-native-swipeout';
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import AddTaskModal from './AddTaskModal';
 import EditModal from './EditModal';
+import DetailModal from './DetailModal'
 
 var screen = Dimensions.get('window');
 class FlatListItem extends Component {
@@ -19,6 +20,7 @@ class FlatListItem extends Component {
             numberOfRefresh: 0,
         };
     }
+
     refreshFlatListItem = () => {
         this.setState((prevState) => {
             return {
@@ -87,6 +89,15 @@ class FlatListItem extends Component {
                             <Text style={[styles.flatListItem,{fontWeight:'bold'}]}>
                                 "{this.props.item.name}"
                             </Text>
+                            <TouchableHighlight
+                                title='detail'
+                                onPress={()=>{
+                                    this.props.parentFlatList.refs.detailModal.showDetailModal(flatListData[this.props.index], this)}
+                                }>
+                                <Text style={styles.text}>
+                                    Подробнее
+                                </Text>
+                            </TouchableHighlight>
                             {/* asdasfasfasfasdsadsad */}
                             {this.props.item.taskIsComplete &&
                             <View >
@@ -171,6 +182,9 @@ export default class BasicFlatList extends Component {
             <EditModal ref={'editModal'} parentFlatList={this}>
 
             </EditModal>
+            <DetailModal ref={'detailModal'} parentFlatList={this}>
+
+            </DetailModal>
         </View>
       );
     }

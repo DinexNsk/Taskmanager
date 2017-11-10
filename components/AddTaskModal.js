@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {
-    FlatList, StyleSheet, Text, View, Alert,
-    Platform, Dimensions,TimePickerAndroid,
-    TextInput,DatePickerAndroid, Keyboard, 
-    TouchableWithoutFeedback,StatusBar
+    Text, View, Dimensions,Platform,
+    TimePickerAndroid,DatePickerAndroid,
+    TextInput, Keyboard, StatusBar,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Modal from 'react-native-modalbox';
@@ -102,7 +102,6 @@ export default class AddTaskModal extends Component {
                     underlineColorAndroid='transparent'
                     style={myStyles.textInput}         
                     onChangeText={(text) => this.setState({ newTaskName: text })}
-                    onEndEditing ={()=>Keyboard.dismiss()}
                     placeholder="Enter new Task's name"             
                 />
                 <TextInput
@@ -143,7 +142,7 @@ export default class AddTaskModal extends Component {
                     onPress={() => {
                          if (this.state.newTaskName.length == 0 || this.state.newTaskDescription.length == 0||
                             this.state.newPriority.length == 0 || this.state.newTaskMustComlete.length == 0) {
-                            alert("Введена не вся информация");
+                            alert("Заполнены не все поля");
                             return;
                         }       
                         const newKey = this.generateKey(24);

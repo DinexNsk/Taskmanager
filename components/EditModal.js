@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {
-    AppRegistry, FlatList, StyleSheet, Text, View, Image, Alert,
-    Platform, TouchableHighlight, Dimensions,
-    TextInput,DatePickerAndroid,
+    Text, View,TextInput,
+    Platform, Dimensions,
+    DatePickerAndroid,
     TimePickerAndroid,
 } from 'react-native';
 import Modal from 'react-native-modalbox';
@@ -30,7 +30,6 @@ export default class EditModal extends Component {
             taskIsComplete:false,
             taskWasCompleted:'',
         };
-        // var momentTime =moment().format()
     }
     async openAndroidDatePicker() {
         try {
@@ -84,8 +83,7 @@ export default class EditModal extends Component {
             taskWasCompleted:dateComplete,
         })
     }
-    showEditModal = (editingTask, flatlistItem) => {     
-        // console.log(`editingTask = ${JSON.stringify(editingTask)}`);           
+    showEditModal = (editingTask, flatlistItem) => {                
         this.setState({
             key: editingTask.key,
             taskName: editingTask.name,
@@ -170,10 +168,10 @@ export default class EditModal extends Component {
                     }}
                     onPress={() => {
                          if (this.state.taskName.length == 0 || this.state.taskDescription.length == 0) {
-                            alert("You must enter food's name and description");
+                            alert("You must enter task's name and description");
                             return;
                         }       
-                        //Update existing Food
+                        //update existing task
                         var foundIndex = flatListData.findIndex(item => this.state.key == item.key);
                         if (foundIndex < 0) {
                             return; //not found
