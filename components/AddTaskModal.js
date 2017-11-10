@@ -93,7 +93,7 @@ export default class AddTaskModal extends Component {
                 <StatusBar hidden/>
                 {/* Touchable needs here to fix Keyboard bug */}
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View>
+                <View style={{flex:1}}>
                 <Text style={myStyles.header}>
                 Adding new Task
                 </Text>
@@ -114,7 +114,7 @@ export default class AddTaskModal extends Component {
                 />
                 <ModalDropdown
                     showsVerticalScrollIndicator={false}
-                    style={myStyles.textInput}
+                    style={myStyles.textInputNoSize}
                     textStyle={myStyles.text}
                     dropdownStyle={myStyles.dropdown}
                     dropdownTextStyle = {myStyles.dropdownText}
@@ -123,7 +123,7 @@ export default class AddTaskModal extends Component {
                     defaultValue='Нажмите, чтобы выбрать приоритет'
                     onSelect = {(idx, value) => this.setState({newPriority:value})}
                 />
-                <View style={[myStyles.textInput,myStyles.dateTime]}>
+                <View style={[myStyles.textInputNoSize,myStyles.dateTime]}>
                     <Text 
                         style={{width:60, height:60}}
                         onPress = {()=>this._dateTime()}>
@@ -136,48 +136,53 @@ export default class AddTaskModal extends Component {
                         {this.state.newTaskMustComlete}
                     </Text>
                 </View>
-                <Button
-                    style={{ fontSize: 18, color: 'white' }}
-                    containerStyle={myStyles.button}
-                    onPress={() => {
-                         if (this.state.newTaskName.length == 0 || this.state.newTaskDescription.length == 0||
-                            this.state.newPriority.length == 0 || this.state.newTaskMustComlete.length == 0) {
-                            alert("Заполнены не все поля");
-                            return;
-                        }       
-                        const newKey = this.generateKey(24);
-                        const newTask = {
-                            key: newKey,
-                            name: this.state.newTaskName,
-                            taskDescription: this.state.newTaskDescription,
-                            taskMustComplete: this.state.newTaskMustComlete,
-                            priority:this.state.newPriority,
-                            taskWasCompleted:'',
-                            taskIsComplete:false,
-                        };    
-                        flatListData.push(newTask);    
-                        this.props.parentFlatList.refreshFlatList(newKey);
-                        Object.keys(this.state).forEach(stateKey => {
-                          clearState[stateKey] = '';
-                        });
-                        this.setState(clearState);                                
-                        this.refs.myModal.close();                                                                       
-                    }}>
-                    Save
-                </Button>
-                <Button
-                    style={{fontSize: 18, color: 'white' }}
-                    containerStyle={[myStyles.button, myStyles.cancel]}
-                    onPress={() => {
-                        Object.keys(this.state).forEach(stateKey => {
-                            clearState[stateKey] = '';
-                          });
-                        this.setState(clearState);                               
-                        this.refs.myModal.close();                                                                       
-                    }}>
+                <View style={{
+                    flex:1,
+                    flexDirection:'row', 
+                    justifyContent:'center'}}>
+                    <Button
+                        style={{fontSize: 18, color: 'white' }}
+                        containerStyle={myStyles.buttonCancel}
+                        onPress={() => {
+                            Object.keys(this.state).forEach(stateKey => {
+                                clearState[stateKey] = '';
+                            });
+                            this.setState(clearState);                               
+                            this.refs.myModal.close();                                                                       
+                        }}>
                     Отмена
                     </Button>
-                    </View>
+                    <Button
+                        style={{ fontSize: 18, color: 'white' }}
+                        containerStyle={myStyles.buttonOk}
+                        onPress={() => {
+                            if (this.state.newTaskName.length == 0 || this.state.newTaskDescription.length == 0||
+                                this.state.newPriority.length == 0 || this.state.newTaskMustComlete.length == 0) {
+                                alert("Заполнены не все поля");
+                                return;
+                            }       
+                            const newKey = this.generateKey(24);
+                            const newTask = {
+                                key: newKey,
+                                name: this.state.newTaskName,
+                                taskDescription: this.state.newTaskDescription,
+                                taskMustComplete: this.state.newTaskMustComlete,
+                                priority:this.state.newPriority,
+                                taskWasCompleted:'',
+                                taskIsComplete:false,
+                            };    
+                            flatListData.push(newTask);    
+                            this.props.parentFlatList.refreshFlatList(newKey);
+                            Object.keys(this.state).forEach(stateKey => {
+                            clearState[stateKey] = '';
+                            });
+                            this.setState(clearState);                                
+                            this.refs.myModal.close();                                                                       
+                        }}>
+                    Save
+                    </Button>
+                </View>
+                </View>
                 </TouchableWithoutFeedback>
             </Modal>
             

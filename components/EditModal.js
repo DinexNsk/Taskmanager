@@ -12,25 +12,19 @@ import {CheckBox} from 'react-native-elements';
 import moment from 'moment';
 import 'moment-timezone';
 
-
 import myStyles from './styles'
 import flatListData from '../data/flatListData';
 import ModalDropdown from 'react-native-modal-dropdown';
 
 moment.tz.setDefault('Asia/Novosibirsk')
 var screen = Dimensions.get('window');
+
 export default class EditModal extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            taskName: '',
-            taskDescription: '',
-            newPriority:'',
-            taskMustComplete:'',
-            taskIsComplete:false,
-            taskWasCompleted:'',
-        };
+        this.state = {};
     }
+
     async openAndroidDatePicker() {
         try {
           const {action, year, month, day} = await DatePickerAndroid.open({
@@ -127,7 +121,7 @@ export default class EditModal extends Component {
                 />
                 <ModalDropdown
                     showsVerticalScrollIndicator={false}
-                    style={myStyles.textInput}
+                    style={myStyles.textInputNoSize}
                     textStyle={myStyles.text}
                     dropdownStyle={myStyles.dropdown}
                     dropdownTextStyle = {myStyles.dropdownText}
@@ -136,7 +130,7 @@ export default class EditModal extends Component {
                     options={['usual', 'important', 'very important']}
                     onSelect = {(idx, value) => this.setState({newPriority:value})}
                 />
-                <View style={[myStyles.textInput,myStyles.dateTime]}>
+                <View style={[myStyles.textInputNoSize,myStyles.dateTime]}>
                     <Text 
                         style={{width:60, height:60}}
                         onPress = {()=>this._dateTime()}>
@@ -150,22 +144,28 @@ export default class EditModal extends Component {
                     </Text>
                 </View>
                 <CheckBox
-                    containerStyle={myStyles.textInput}
+                    containerStyle={myStyles.textInputNoSize}
                     checked = {this.state.taskIsComplete}
                     onPress = {this._checkBox}
                     title={this.state.taskIsComplete?
                         `Задача выполнена :${this.state.taskWasCompleted}`:
                         'Задача не выполнена'}/>
+                        
+                <View style={{
+                    flex:1,
+                    flexDirection:'row', 
+                    justifyContent:'center'}}>
+                    <Button
+                        style={{fontSize: 18, color: 'white' }}
+                        containerStyle={myStyles.buttonCancel}
+                        onPress={() => {                              
+                            this.refs.myModal.close();                                                                       
+                        }}>
+                        Отмена
+                    </Button>
                 <Button
                     style={{ fontSize: 18, color: 'white' }}
-                    containerStyle={{
-                        padding: 8,
-                        marginLeft: 70,
-                        marginRight: 70,
-                        height: 40,
-                        borderRadius: 6,
-                        backgroundColor: 'mediumseagreen'
-                    }}
+                        containerStyle={myStyles.buttonOk}
                     onPress={() => {
                          if (this.state.taskName.length == 0 || this.state.taskDescription.length == 0) {
                             alert("You must enter task's name and description");
@@ -188,6 +188,7 @@ export default class EditModal extends Component {
                     }}>
                     Save
                 </Button>
+                </View>
             </Modal>
         );
     }

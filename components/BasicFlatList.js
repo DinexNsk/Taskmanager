@@ -7,6 +7,7 @@ import flatListData from '../data/flatListData';
 import Swipeout from 'react-native-swipeout';
 import Icon from 'react-native-vector-icons/Ionicons'
 
+import myStyles from './styles'
 import AddTaskModal from './AddTaskModal';
 import EditModal from './EditModal';
 import DetailModal from './DetailModal'
@@ -30,6 +31,7 @@ class FlatListItem extends Component {
     }
     render() {   
         const swipeSettings = {
+            buttonWidth:50,
             autoClose: true,
             onClose: (secId, rowId, direction) => {
                 if(this.state.activeRowKey != null) {
@@ -51,8 +53,8 @@ class FlatListItem extends Component {
                     onPress: () => {    
                         const deletingRow = this.state.activeRowKey;          
                         Alert.alert(
-                            'Alert',
-                            'Are you sure you want to delete ?',
+                            `Deleting "${this.props.item.name}"`,
+                            'Are you sure?',
                             [                              
                               {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                               {text: 'Yes', onPress: () => {        
@@ -74,49 +76,54 @@ class FlatListItem extends Component {
             <Swipeout {...swipeSettings}>
 
             <StatusBar hidden/>
+            <TouchableHighlight
+                title='detail'
+                onPress={()=>{
+                this.props.parentFlatList.refs.detailModal.
+                showDetailModal(flatListData[this.props.index])}
+                                }>  
                 <View style={{flex: 1,flexDirection:'column'}}>           
                     <View style={{
                             flex: 1,
                             flexDirection:'row',                
-                            backgroundColor: 'mediumseagreen',
+                            backgroundColor: '#d35400',
                     }}>            
                         <View style={{
                                 flex: 1,
                                 flexDirection:'column',   
                                 alignContent:'center',
                                 alignItems:'center',                
-                            }}>             
-                            <Text style={[styles.flatListItem,{fontWeight:'bold'}]}>
+                            }}>
+                                      
+                            <Text style={[myStyles.flatListItem,{fontWeight:'bold'}]}>
                                 "{this.props.item.name}"
                             </Text>
-                            <TouchableHighlight
-                                title='detail'
-                                onPress={()=>{
-                                    this.props.parentFlatList.refs.detailModal.showDetailModal(flatListData[this.props.index], this)}
-                                }>
-                                <Text style={styles.text}>
-                                    Подробнее
-                                </Text>
-                            </TouchableHighlight>
-                            {/* asdasfasfasfasdsadsad */}
+                            
+                            
+
                             {this.props.item.taskIsComplete &&
-                            <View >
-                                <Text style={[styles.flatListItem,{color:'#f90101'}]}>
+                                <Text style={{
+                                    color:'#2ecc71',
+                                    fontSize:18,
+                                    fontWeight:'bold',
+                                    padding: 10,}}>
                                     Задача выполнена: {this.props.item.taskWasCompleted}
                                 </Text>
-                            </View> ||
-                                <Text style={styles.flatListItem}>
+                                 ||
+                                <Text style={myStyles.flatListItem}>
                                     (Выполнить до: {this.props.item.taskMustComplete})
-                                </Text>} 
+                                </Text>
+                            } 
                         </View>              
                     </View>
                     <View style={{
                         height: 1,
-                        backgroundColor:'white'                            
+                        backgroundColor:'black'                            
                     }}>
                 
                     </View>
-                </View>   
+                </View>  
+                </TouchableHighlight> 
             </Swipeout>      
             
         );
@@ -146,14 +153,14 @@ export default class BasicFlatList extends Component {
     render() {
       return (
         <View style={{flex: 1, marginTop: Platform.OS === 'ios' ? 34 : 0}}>
-            <View style={styles.page}>
+            <View style={myStyles.page}>
                 <TouchableHighlight 
-                    style = {styles.touchable}
-                    underlayColor='tomato'
+                    style = {myStyles.touchable}
+                    underlayColor='#d35400'
                     onPress={this._onPressAdd}
                     >
-                    <View style={styles.page}>
-                        <Text style={styles.text}>
+                    <View style={myStyles.page}>
+                        <Text style={myStyles.textBasic}>
                             Добавить задачу
                         </Text>
                         <Image
@@ -190,33 +197,4 @@ export default class BasicFlatList extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    page:{
-        backgroundColor: 'tomato', 
-        flexDirection: 'row',
-        justifyContent:'center',                
-        alignItems: 'center',
-        height: 64
-    },
-    flatListItem: {
-        color: 'white',
-        padding: 10,
-        fontSize: 17,
-        fontStyle:'italic'    
-    },
-    touchable: {
-        flex:1,
-        flexDirection:'row', 
-        justifyContent:'center'
-    },
-    text :{
-        fontSize:24,
-        padding:10,
-        color:'white'
-    }
-
-});
 

@@ -8,6 +8,7 @@ var myStyles = React.StyleSheet.create({
         flex: 1
     },
     modal:{
+        paddingTop:40,
         flex:1,
         justifyContent: 'center',
         borderRadius: Platform.OS === 'ios' ? 30 : 0,
@@ -15,11 +16,20 @@ var myStyles = React.StyleSheet.create({
         width: screen.width,
     },
     header:{
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
     },
     textInput:{
+        fontSize:18,
+        height: 40,
+        borderBottomColor: 'gray',
+        marginLeft: 30,
+        marginRight: 30,
+        marginTop: 20,
+        borderBottomWidth: 1,
+    },
+    textInputNoSize:{
         height: 40,
         borderBottomColor: 'gray',
         marginLeft: 30,
@@ -43,7 +53,7 @@ var myStyles = React.StyleSheet.create({
     },
     text:{
         height:40,
-        fontSize:16,
+        fontSize:18,
         textAlignVertical:'center'
     },
     dropdownText:{
@@ -62,6 +72,56 @@ var myStyles = React.StyleSheet.create({
         marginTop:20,
         backgroundColor: 'green',
     },
+    page:{
+        backgroundColor: '#2ecc71', 
+        flexDirection: 'row',
+        justifyContent:'center',                
+        alignItems: 'center',
+        height: 64
+    },
+    flatListItem: {
+        color: 'white',
+        padding: 10,
+        fontSize: 17,
+        fontStyle:'italic'    
+    },
+    touchable: {
+        flex:1,
+        flexDirection:'row', 
+        justifyContent:'center'
+    },
+    textBasic :{
+        fontSize:24,
+        padding:10,
+        color:'white'
+    },
+    textDescription:{
+        fontSize:18,
+        borderBottomColor: 'gray',
+        marginLeft: 30,
+        marginRight: 30,
+        marginTop: 20,
+        borderBottomWidth: 1,
+    },
+    buttonOk:{
+        marginRight: 30,
+        marginTop: 20,
+        padding: 8,
+        height: 40,
+        flex:1,
+        borderRadius: 6,
+        backgroundColor: '#3498db'
+    },
+    buttonCancel:{
+        marginLeft: 30,
+        marginRight: 30,
+        marginTop: 20,
+        flex:1,
+        padding: 8,
+        height: 40,
+        borderRadius: 6,
+        backgroundColor: 'green'
+    }
 })
 
 module.exports = myStyles;

@@ -14,26 +14,18 @@ export default class DetailModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            taskName: '',
-            taskDescription: '',
-            newPriority:'',
-            taskMustComplete:'',
-            taskIsComplete:false,
-            taskWasCompleted:'',
         };
     }
 
-    showDetailModal = (editingTask, flatlistItem) => {     
-        // console.log(`editingTask = ${JSON.stringify(editingTask)}`);           
+    showDetailModal = (currentTask) => {                
         this.setState({
-            key: editingTask.key,
-            taskName: editingTask.name,
-            taskDescription: editingTask.taskDescription,
-            newPriority: editingTask.priority,
-            taskMustComplete:editingTask.taskMustComplete,
-            taskIsComplete:editingTask.taskIsComplete,
-            taskWasCompleted:editingTask.taskWasCompleted,
-            flatlistItem: flatlistItem
+            key: currentTask.key,
+            taskName: currentTask.name,
+            taskDescription: currentTask.taskDescription,
+            newPriority: currentTask.priority,
+            taskMustComplete:currentTask.taskMustComplete,
+            taskIsComplete:currentTask.taskIsComplete,
+            taskWasCompleted:currentTask.taskWasCompleted,
         });
         this.refs.myModal.open();
     } 
@@ -49,13 +41,14 @@ export default class DetailModal extends Component {
                 }}
             >
                 <Text style={myStyles.header}>{this.state.taskName}</Text>           
-                <Text>Task description: {this.state.taskDescription}</Text>                 
-                <Text>Task's priority : {this.state.newPriority}</Text>
+                <Text style={myStyles.textDescription}
+                    >Task description: {this.state.taskDescription}</Text>                 
+                <Text style={myStyles.textInput}>Task's priority : {this.state.newPriority}</Text>
                 <Text style={myStyles.textInput}>
-                    {this.state.taskMustComplete}
+                    Task must complete: {this.state.taskMustComplete}
                 </Text>
                 <CheckBox
-                    containerStyle={myStyles.textInput}
+                    containerStyle={myStyles.textInputNoSize}
                     checked = {this.state.taskIsComplete}
                     title={this.state.taskIsComplete?
                         `Задача выполнена :${this.state.taskWasCompleted}`:
