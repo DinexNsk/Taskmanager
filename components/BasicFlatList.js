@@ -95,7 +95,7 @@ class FlatListItem extends Component {
                                 </Text>
                             </View> ||
                                 <Text style={styles.flatListItem}>
-                                    (Выполнить до: {this.props.item.taskMustComlete})
+                                    (Выполнить до: {this.props.item.taskMustComplete})
                                 </Text>} 
                         </View>              
                     </View>

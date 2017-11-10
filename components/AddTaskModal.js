@@ -24,7 +24,7 @@ export default class AddTaskModal extends Component {
             newPriority:'',
             myDate:'',
             myTime:' ',
-            taskMustComlete:'',
+            newTaskMustComlete:'',
         };
     }
     showAddTaskModal = () => {
@@ -63,7 +63,7 @@ export default class AddTaskModal extends Component {
           }else{
             this.setState({hour:hour, minutes:minute}) ;
             this.setState({myTime:`${this.state.hour}:${this.state.minutes}`});
-            this.setState({taskMustComlete:this.state.myDate +' '+this.state.myTime});
+            this.setState({newTaskMustComlete:this.state.myDate +' '+this.state.myTime});
           }
         } catch ({code, message}) {
           console.warn('Cannot open time picker', message);
@@ -134,7 +134,7 @@ export default class AddTaskModal extends Component {
                         />
                     </Text>
                     <Text style={myStyles.textInput}>
-                        {this.state.taskMustComlete}
+                        {this.state.newTaskMustComlete}
                     </Text>
                 </View>
                 <Button
@@ -142,7 +142,7 @@ export default class AddTaskModal extends Component {
                     containerStyle={myStyles.button}
                     onPress={() => {
                          if (this.state.newTaskName.length == 0 || this.state.newTaskDescription.length == 0||
-                            this.state.newPriority.length == 0) {
+                            this.state.newPriority.length == 0 || this.state.newTaskMustComlete.length == 0) {
                             alert("Введена не вся информация");
                             return;
                         }       
@@ -151,7 +151,7 @@ export default class AddTaskModal extends Component {
                             key: newKey,
                             name: this.state.newTaskName,
                             taskDescription: this.state.newTaskDescription,
-                            taskMustComlete: this.state.taskMustComlete,
+                            taskMustComplete: this.state.newTaskMustComlete,
                             priority:this.state.newPriority,
                             taskWasCompleted:'',
                             taskIsComplete:false,

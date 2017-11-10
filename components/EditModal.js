@@ -7,11 +7,17 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {CheckBox} from 'react-native-elements';
+import moment from 'moment';
+import 'moment-timezone';
+
 
 import myStyles from './styles'
 import flatListData from '../data/flatListData';
 import ModalDropdown from 'react-native-modal-dropdown';
 
+moment.tz.setDefault('Asia/Novosibirsk')
 var screen = Dimensions.get('window');
 export default class EditModal extends Component {
     constructor(props) {
@@ -22,8 +28,61 @@ export default class EditModal extends Component {
             newPriority:'',
             taskMustComplete:'',
             taskIsComplete:false,
-            taskWasCompleted:''
+            taskWasCompleted:'',
         };
+        // var momentTime =moment().format()
+    }
+    async openAndroidDatePicker() {
+        try {
+          const {action, year, month, day} = await DatePickerAndroid.open({
+            date: new Date(),
+            mode:'default',
+          });
+          if (action == DatePickerAndroid.dateSetAction){
+            this.setState({year:year,month:month, day:day});
+            this.setState({myDate:`${this.state.day}/${this.state.month}/${this.state.year}`});
+          }else{
+            alert('You have been close the Date')
+          }
+        } catch ({code, message}) {
+          console.warn('Cannot open date picker', message);
+        }
+      }
+
+    async openAndroidTimePicker(){
+        try {
+          const {action, hour, minute} = await TimePickerAndroid.open({
+            hour: 0,
+            minute: 0,
+            is24Hour: true,
+          });
+          if (action !== TimePickerAndroid.timeSetAction){
+              alert('Вы не выбрали время')
+          }else{
+            this.setState({hour:hour, minutes:minute}) ;
+            this.setState({myTime:`${this.state.hour}:${this.state.minutes}`});
+            this.setState({taskMustComplete:this.state.myDate +' '+this.state.myTime});
+          }
+        } catch ({code, message}) {
+          console.warn('Cannot open time picker', message);
+        }
+      }
+
+    async _dateTime(){
+        try {
+            let getDate = await this.openAndroidDatePicker();
+            let getTime = await this.openAndroidTimePicker();
+        } catch (error) {
+            console.log(error)
+        }    
+    }
+
+    _checkBox = ()=>{
+        var dateComplete = moment().format('DD/MM/YYYY HH:mm')
+        this.setState({
+            taskIsComplete:!this.state.taskIsComplete,
+            taskWasCompleted:dateComplete,
+        })
     }
     showEditModal = (editingTask, flatlistItem) => {     
         // console.log(`editingTask = ${JSON.stringify(editingTask)}`);           
@@ -55,12 +114,14 @@ export default class EditModal extends Component {
             >
                 <Text style={myStyles.header}>Editing task</Text>
                 <TextInput
+                    underlineColorAndroid='transparent'
                     style={myStyles.textInput}           
                     onChangeText={(text) => this.setState({ taskName: text })}
                     placeholder="Edit task's name"
                     value={this.state.taskName}                 
                 />
                 <TextInput
+                    underlineColorAndroid='transparent'
                     style={myStyles.textInput}           
                     onChangeText={(text) => this.setState({ taskDescription: text })}
                     placeholder="Edit task's description"
@@ -72,10 +133,31 @@ export default class EditModal extends Component {
                     textStyle={myStyles.text}
                     dropdownStyle={myStyles.dropdown}
                     dropdownTextStyle = {myStyles.dropdownText}
+                    defaultValue ={this.state.newPriority}
                     animated={false}
                     options={['usual', 'important', 'very important']}
                     onSelect = {(idx, value) => this.setState({newPriority:value})}
                 />
+                <View style={[myStyles.textInput,myStyles.dateTime]}>
+                    <Text 
+                        style={{width:60, height:60}}
+                        onPress = {()=>this._dateTime()}>
+                    <Icon name="calendar"
+                        size={40}
+                        color='black'
+                        />
+                    </Text>
+                    <Text style={myStyles.textInput}>
+                        {this.state.taskMustComplete}
+                    </Text>
+                </View>
+                <CheckBox
+                    containerStyle={myStyles.textInput}
+                    checked = {this.state.taskIsComplete}
+                    onPress = {this._checkBox}
+                    title={this.state.taskIsComplete?
+                        `Задача выполнена :${this.state.taskWasCompleted}`:
+                        'Задача не выполнена'}/>
                 <Button
                     style={{ fontSize: 18, color: 'white' }}
                     containerStyle={{
@@ -99,6 +181,9 @@ export default class EditModal extends Component {
                         flatListData[foundIndex].name = this.state.taskName;
                         flatListData[foundIndex].taskDescription = this.state.taskDescription;
                         flatListData[foundIndex].priority = this.state.taskPriority;
+                        flatListData[foundIndex].taskMustComplete = this.state.taskMustComplete;
+                        flatListData[foundIndex].taskIsComplete = this.state.taskIsComplete;
+                        flatListData[foundIndex].taskWasCompleted = this.state.taskWasCompleted;
                         //Refresh flatlist item
                         this.state.flatlistItem.refreshFlatListItem();
                         this.refs.myModal.close();                                                                       
