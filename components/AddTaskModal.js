@@ -19,12 +19,12 @@ export default class AddTaskModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            newTaskName: '',
-            newTaskDescription: '',
+            newName: '',
+            newDescription: '',
             newPriority:'',
             myDate:'',
             myTime:' ',
-            newTaskMustComlete:'',
+            newMustComplete:'',
         };
     }
     showAddTaskModal = () => {
@@ -63,7 +63,7 @@ export default class AddTaskModal extends Component {
           }else{
             this.setState({hour:hour, minutes:minute}) ;
             this.setState({myTime:`${this.state.hour}:${this.state.minutes}`});
-            this.setState({newTaskMustComlete:this.state.myDate +' '+this.state.myTime});
+            this.setState({newMustComplete:this.state.myDate +' '+this.state.myTime});
           }
         } catch ({code, message}) {
           console.warn('Cannot open time picker', message);
@@ -101,14 +101,14 @@ export default class AddTaskModal extends Component {
                     returnKeyType='next'
                     underlineColorAndroid='transparent'
                     style={myStyles.textInput}         
-                    onChangeText={(text) => this.setState({ newTaskName: text })}
+                    onChangeText={(text) => this.setState({ newName: text })}
                     placeholder="Enter new Task's name"             
                 />
                 <TextInput
                     returnKeyType='next'
                     underlineColorAndroid='transparent'
                     style={myStyles.textInput}
-                    onChangeText={(text) => this.setState({ newTaskDescription: text })}
+                    onChangeText={(text) => this.setState({ newDescription: text })}
                     placeholder="Enter new Task's description"
                     
                 />
@@ -119,7 +119,7 @@ export default class AddTaskModal extends Component {
                     dropdownStyle={myStyles.dropdown}
                     dropdownTextStyle = {myStyles.dropdownText}
                     animated={false}
-                    options={['usual', 'important', 'very important']}
+                    options={['normal', 'important', 'very important']}
                     defaultValue='Нажмите, чтобы выбрать приоритет'
                     onSelect = {(idx, value) => this.setState({newPriority:value})}
                 />
@@ -133,7 +133,7 @@ export default class AddTaskModal extends Component {
                         />
                     </Text>
                     <Text style={myStyles.textInput}>
-                        {this.state.newTaskMustComlete}
+                        {this.state.newMustComplete}
                     </Text>
                 </View>
                 <View style={{
@@ -156,20 +156,20 @@ export default class AddTaskModal extends Component {
                         style={{ fontSize: 18, color: 'white' }}
                         containerStyle={myStyles.buttonOk}
                         onPress={() => {
-                            if (this.state.newTaskName.length == 0 || this.state.newTaskDescription.length == 0||
-                                this.state.newPriority.length == 0 || this.state.newTaskMustComlete.length == 0) {
+                            if (this.state.newName.length == 0 || this.state.newDescription.length == 0||
+                                this.state.newPriority.length == 0 || this.state.newMustComplete.length == 0) {
                                 alert("Заполнены не все поля");
                                 return;
                             }       
                             const newKey = this.generateKey(24);
                             const newTask = {
                                 key: newKey,
-                                name: this.state.newTaskName,
-                                taskDescription: this.state.newTaskDescription,
-                                taskMustComplete: this.state.newTaskMustComlete,
+                                name: this.state.newName,
+                                description: this.state.newDescription,
+                                mustComplete: this.state.newMustComplete,
                                 priority:this.state.newPriority,
-                                taskWasCompleted:'',
-                                taskIsComplete:false,
+                                dateComplete:'',
+                                isComplete:false,
                             };    
                             flatListData.push(newTask);    
                             this.props.parentFlatList.refreshFlatList(newKey);

@@ -20,12 +20,12 @@ export default class DetailModal extends Component {
     showDetailModal = (currentTask) => {                
         this.setState({
             key: currentTask.key,
-            taskName: currentTask.name,
-            taskDescription: currentTask.taskDescription,
-            newPriority: currentTask.priority,
-            taskMustComplete:currentTask.taskMustComplete,
-            taskIsComplete:currentTask.taskIsComplete,
-            taskWasCompleted:currentTask.taskWasCompleted,
+            detailName: currentTask.name,
+            detailDescription: currentTask.description,
+            detailPriority: currentTask.priority,
+            detailMustComplete:currentTask.mustComplete,
+            detailIsComplete:currentTask.isComplete,
+            detailDateComplete:currentTask.dateComplete,
         });
         this.refs.myModal.open();
     } 
@@ -40,29 +40,22 @@ export default class DetailModal extends Component {
                     // alert("Modal closed");
                 }}
             >
-                <Text style={myStyles.header}>{this.state.taskName}</Text>           
+                <Text style={myStyles.header}>"{this.state.detailName}"</Text>           
                 <Text style={myStyles.textDescription}
-                    >Task description: {this.state.taskDescription}</Text>                 
-                <Text style={myStyles.textInput}>Task's priority : {this.state.newPriority}</Text>
+                    >Task description: {this.state.detailDescription}</Text>                 
+                <Text style={myStyles.textInput}>Task's priority : {this.state.detailPriority}</Text>
                 <Text style={myStyles.textInput}>
-                    Task must complete: {this.state.taskMustComplete}
+                    Task must complete: {this.state.detailMustComplete}
                 </Text>
                 <CheckBox
                     containerStyle={myStyles.textInputNoSize}
-                    checked = {this.state.taskIsComplete}
-                    title={this.state.taskIsComplete?
-                        `Задача выполнена :${this.state.taskWasCompleted}`:
+                    checked = {this.state.detailIsComplete}
+                    title={this.state.detailIsComplete?
+                        `Задача выполнена :${this.state.detailDateComplete}`:
                         'Задача не выполнена'}/>
                 <Button
-                    style={{ fontSize: 18, color: 'white' }}
-                    containerStyle={{
-                        padding: 8,
-                        marginLeft: 70,
-                        marginRight: 70,
-                        height: 40,
-                        borderRadius: 6,
-                        backgroundColor: 'mediumseagreen'
-                    }}
+                    style={{ fontSize: 18, color: 'white'}}
+                    containerStyle={[myStyles.button,{marginTop:20}]}
                     onPress={() => {   
                         this.refs.myModal.close();                                                                       
                     }}>

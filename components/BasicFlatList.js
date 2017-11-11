@@ -101,17 +101,17 @@ class FlatListItem extends Component {
                             
                             
 
-                            {this.props.item.taskIsComplete &&
+                            {this.props.item.isComplete &&
                                 <Text style={{
                                     color:'#2ecc71',
                                     fontSize:18,
                                     fontWeight:'bold',
                                     padding: 10,}}>
-                                    Задача выполнена: {this.props.item.taskWasCompleted}
+                                    Задача выполнена: {this.props.item.dateComplete}
                                 </Text>
                                  ||
                                 <Text style={myStyles.flatListItem}>
-                                    (Выполнить до: {this.props.item.taskMustComplete})
+                                    (Выполнить до: {this.props.item.mustComplete})
                                 </Text>
                             } 
                         </View>              
@@ -151,6 +151,7 @@ export default class BasicFlatList extends Component {
         this.refs.addTaskModal.showAddTaskModal();
     }
     render() {
+      var  myFilter ='normal'
       return (
         <View style={{flex: 1, marginTop: Platform.OS === 'ios' ? 34 : 0}}>
             <View style={myStyles.page}>

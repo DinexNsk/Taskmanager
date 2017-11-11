@@ -4,6 +4,8 @@ import {
     Platform, Dimensions,
     DatePickerAndroid,
     TimePickerAndroid,
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
@@ -54,7 +56,7 @@ export default class EditModal extends Component {
           }else{
             this.setState({hour:hour, minutes:minute}) ;
             this.setState({myTime:`${this.state.hour}:${this.state.minutes}`});
-            this.setState({taskMustComplete:this.state.myDate +' '+this.state.myTime});
+            this.setState({editMustComplete:this.state.myDate +' '+this.state.myTime});
           }
         } catch ({code, message}) {
           console.warn('Cannot open time picker', message);
@@ -73,19 +75,19 @@ export default class EditModal extends Component {
     _checkBox = ()=>{
         var dateComplete = moment().format('DD/MM/YYYY HH:mm')
         this.setState({
-            taskIsComplete:!this.state.taskIsComplete,
-            taskWasCompleted:dateComplete,
+            editTaskIsComplete:!this.state.editTaskIsComplete,
+            editDateComplete:dateComplete,
         })
     }
     showEditModal = (editingTask, flatlistItem) => {                
         this.setState({
             key: editingTask.key,
-            taskName: editingTask.name,
-            taskDescription: editingTask.taskDescription,
-            newPriority: editingTask.priority,
-            taskMustComplete:editingTask.taskMustComplete,
-            taskIsComplete:editingTask.taskIsComplete,
-            taskWasCompleted:editingTask.taskWasCompleted,
+            editName: editingTask.name,
+            editDescription: editingTask.description,
+            editPriority: editingTask.priority,
+            editMustComplete:editingTask.mustComplete,
+            editTaskIsComplete:editingTask.isComplete,
+            editDateComplete:editingTask.dateComplete,
             flatlistItem: flatlistItem
         });
         this.refs.myModal.open();
@@ -104,20 +106,22 @@ export default class EditModal extends Component {
                     // alert("Modal closed");
                 }}
             >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View>
                 <Text style={myStyles.header}>Editing task</Text>
                 <TextInput
                     underlineColorAndroid='transparent'
                     style={myStyles.textInput}           
-                    onChangeText={(text) => this.setState({ taskName: text })}
+                    onChangeText={(text) => this.setState({ editName: text })}
                     placeholder="Edit task's name"
-                    value={this.state.taskName}                 
+                    value={this.state.editName}                 
                 />
                 <TextInput
                     underlineColorAndroid='transparent'
                     style={myStyles.textInput}           
-                    onChangeText={(text) => this.setState({ taskDescription: text })}
+                    onChangeText={(text) => this.setState({ editDescription: text })}
                     placeholder="Edit task's description"
-                    value={this.state.taskDescription}                 
+                    value={this.state.editDescription}                 
                 />
                 <ModalDropdown
                     showsVerticalScrollIndicator={false}
@@ -125,10 +129,10 @@ export default class EditModal extends Component {
                     textStyle={myStyles.text}
                     dropdownStyle={myStyles.dropdown}
                     dropdownTextStyle = {myStyles.dropdownText}
-                    defaultValue ={this.state.newPriority}
+                    defaultValue ={this.state.editPriority}
                     animated={false}
-                    options={['usual', 'important', 'very important']}
-                    onSelect = {(idx, value) => this.setState({newPriority:value})}
+                    options={['normal', 'important', 'very important']}
+                    onSelect = {(idx, value) => this.setState({editPriority:value})}
                 />
                 <View style={[myStyles.textInputNoSize,myStyles.dateTime]}>
                     <Text 
@@ -140,15 +144,15 @@ export default class EditModal extends Component {
                         />
                     </Text>
                     <Text style={myStyles.textInput}>
-                        {this.state.taskMustComplete}
+                        {this.state.editMustComplete}
                     </Text>
                 </View>
                 <CheckBox
                     containerStyle={myStyles.textInputNoSize}
-                    checked = {this.state.taskIsComplete}
+                    checked = {this.state.editTaskIsComplete}
                     onPress = {this._checkBox}
-                    title={this.state.taskIsComplete?
-                        `Задача выполнена :${this.state.taskWasCompleted}`:
+                    title={this.state.editTaskIsComplete?
+                        `Задача выполнена :${this.state.editDateComplete}`:
                         'Задача не выполнена'}/>
                         
                 <View style={{
@@ -167,7 +171,7 @@ export default class EditModal extends Component {
                     style={{ fontSize: 18, color: 'white' }}
                         containerStyle={myStyles.buttonOk}
                     onPress={() => {
-                         if (this.state.taskName.length == 0 || this.state.taskDescription.length == 0) {
+                         if (this.state.editName.length == 0 || this.state.editDescription.length == 0) {
                             alert("You must enter task's name and description");
                             return;
                         }       
@@ -176,12 +180,12 @@ export default class EditModal extends Component {
                         if (foundIndex < 0) {
                             return; //not found
                         }
-                        flatListData[foundIndex].name = this.state.taskName;
-                        flatListData[foundIndex].taskDescription = this.state.taskDescription;
+                        flatListData[foundIndex].name = this.state.editName;
+                        flatListData[foundIndex].description = this.state.editDescription;
                         flatListData[foundIndex].priority = this.state.taskPriority;
-                        flatListData[foundIndex].taskMustComplete = this.state.taskMustComplete;
-                        flatListData[foundIndex].taskIsComplete = this.state.taskIsComplete;
-                        flatListData[foundIndex].taskWasCompleted = this.state.taskWasCompleted;
+                        flatListData[foundIndex].mustComplete = this.state.editMustComplete;
+                        flatListData[foundIndex].isComplete = this.state.editTaskIsComplete;
+                        flatListData[foundIndex].dateComplete = this.state.editDateComplete;
                         //Refresh flatlist item
                         this.state.flatlistItem.refreshFlatListItem();
                         this.refs.myModal.close();                                                                       
@@ -189,6 +193,8 @@ export default class EditModal extends Component {
                     Save
                 </Button>
                 </View>
+            </View>
+            </TouchableWithoutFeedback>
             </Modal>
         );
     }
