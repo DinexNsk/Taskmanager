@@ -7,6 +7,9 @@ import flatListData from '../data/flatListData';
 import Swipeout from 'react-native-swipeout';
 import Icon from 'react-native-vector-icons/Ionicons'
 
+import moment from 'moment';
+import 'moment-timezone';
+
 import myStyles from './styles'
 import AddTaskModal from './AddTaskModal';
 import EditModal from './EditModal';
@@ -29,7 +32,7 @@ class FlatListItem extends Component {
             };
         });        
     }
-    render() {   
+    render() { 
         const swipeSettings = {
             buttonWidth:50,
             autoClose: true,
@@ -80,8 +83,8 @@ class FlatListItem extends Component {
                 title='detail'
                 onPress={()=>{
                 this.props.parentFlatList.refs.detailModal.
-                showDetailModal(flatListData[this.props.index])}
-                                }>  
+                    showDetailModal(flatListData[this.props.index])}
+                }>  
                 <View style={{flex: 1,flexDirection:'column'}}>           
                     <View style={{
                             flex: 1,
@@ -112,9 +115,18 @@ class FlatListItem extends Component {
                                 flex: 17,
                                 alignItems:'flex-start',                
                             }}>        
-                                <Text style={[myStyles.flatListItem,{fontWeight:'bold'}]}>
-                                    "{this.props.item.name}"
-                                </Text>
+
+                            {moment(this.props.item.mustComplete, "DD-MM-YYYY HH-mm").isBefore(
+                                    moment()) && !this.props.item.isComplete &&
+                                    <Text style={[myStyles.flatListItem,
+                                                {fontWeight:'bold', backgroundColor:'red'}]}>
+                                        "{this.props.item.name}"
+                                    </Text>
+                                ||
+                                    <Text style={[myStyles.flatListItem,{fontWeight:'bold'}]}>
+                                        "{this.props.item.name}"
+                                    </Text>
+                            }
 
                             {this.props.item.isComplete &&
                                 <Text style={{

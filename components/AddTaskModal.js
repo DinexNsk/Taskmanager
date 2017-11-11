@@ -39,9 +39,10 @@ export default class AddTaskModal extends Component {
           const {action, year, month, day} = await DatePickerAndroid.open({
             date: new Date(),
             mode:'default',
+            minDate: new Date()
           });
           if (action == DatePickerAndroid.dateSetAction){
-            this.setState({year:year,month:month, day:day});
+            this.setState({year:year,month:month+1, day:day});
             this.setState({myDate:`${this.state.day}/${this.state.month}/${this.state.year}`});
           }else{
             alert('You have been close the Date')

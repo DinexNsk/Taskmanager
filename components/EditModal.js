@@ -32,9 +32,10 @@ export default class EditModal extends Component {
           const {action, year, month, day} = await DatePickerAndroid.open({
             date: new Date(),
             mode:'default',
+            minDate: new Date()
           });
           if (action == DatePickerAndroid.dateSetAction){
-            this.setState({year:year,month:month, day:day});
+            this.setState({year:year,month:month+1, day:day});
             this.setState({myDate:`${this.state.day}/${this.state.month}/${this.state.year}`});
           }else{
             alert('You have been close the Date')
@@ -107,7 +108,7 @@ export default class EditModal extends Component {
                 }}
             >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View>
+            <View style={{flex:1}}>
                 <Text style={myStyles.header}>Editing task</Text>
                 <TextInput
                     underlineColorAndroid='transparent'
@@ -182,7 +183,7 @@ export default class EditModal extends Component {
                         }
                         flatListData[foundIndex].name = this.state.editName;
                         flatListData[foundIndex].description = this.state.editDescription;
-                        flatListData[foundIndex].priority = this.state.taskPriority;
+                        flatListData[foundIndex].priority = this.state.editPriority;
                         flatListData[foundIndex].mustComplete = this.state.editMustComplete;
                         flatListData[foundIndex].isComplete = this.state.editTaskIsComplete;
                         flatListData[foundIndex].dateComplete = this.state.editDateComplete;
