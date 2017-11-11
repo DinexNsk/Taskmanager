@@ -87,19 +87,34 @@ class FlatListItem extends Component {
                             flex: 1,
                             flexDirection:'row',                
                             backgroundColor: '#d35400',
-                    }}>            
+                    }}>             
                         <View style={{
                                 flex: 1,
-                                flexDirection:'column',   
+                                flexDirection:'row',   
                                 alignContent:'center',
                                 alignItems:'center',                
                             }}>
-                                      
-                            <Text style={[myStyles.flatListItem,{fontWeight:'bold'}]}>
-                                "{this.props.item.name}"
-                            </Text>
-                            
-                            
+                            <View style={{flex: 1}}>
+                                <Text style={{
+                                    fontSize:20,
+                                    marginLeft:5,
+                                    borderWidth:2,
+                                    borderRadius: 50,
+                                    borderColor:'red',
+                                    textAlign:'center',
+                                    color:'blue',
+                                    fontStyle:'italic'
+                                }}>
+                                    {this.props.item.priority[0].toUpperCase()}
+                                </Text>
+                            </View>
+                            <View style={{
+                                flex: 17,
+                                alignItems:'flex-start',                
+                            }}>        
+                                <Text style={[myStyles.flatListItem,{fontWeight:'bold'}]}>
+                                    "{this.props.item.name}"
+                                </Text>
 
                             {this.props.item.isComplete &&
                                 <Text style={{
@@ -114,6 +129,7 @@ class FlatListItem extends Component {
                                     (Выполнить до: {this.props.item.mustComplete})
                                 </Text>
                             } 
+                            </View> 
                         </View>              
                     </View>
                     <View style={{
