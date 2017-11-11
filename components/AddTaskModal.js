@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
     Text, View, Dimensions,Platform,
     TimePickerAndroid,DatePickerAndroid,
-    TextInput, Keyboard, StatusBar,
+    TextInput, Keyboard,
     TouchableWithoutFeedback,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -90,7 +90,6 @@ export default class AddTaskModal extends Component {
                 onClosed={() => {
                     // alert("Modal closed");
                 }}>
-                <StatusBar hidden/>
                 {/* Touchable needs here to fix Keyboard bug */}
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={{flex:1}}>
