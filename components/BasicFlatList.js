@@ -6,7 +6,7 @@ import {
 import flatListData from '../data/flatListData';
 import Swipeout from 'react-native-swipeout';
 import Icon from 'react-native-vector-icons/Ionicons'
-
+import ModalDropdown from 'react-native-modal-dropdown';
 import moment from 'moment';
 import 'moment-timezone';
 
@@ -162,7 +162,8 @@ export default class BasicFlatList extends Component {
     constructor(props) {
         super(props);     
         this.state = ({
-            deletedRowKey: null,            
+            deletedRowKey: null,
+            filter:'all'       
         });
         this._onPressAdd = this._onPressAdd.bind(this);        
     }
@@ -179,7 +180,6 @@ export default class BasicFlatList extends Component {
         this.refs.addTaskModal.showAddTaskModal();
     }
     render() {
-      var  myFilter ='normal'
       return (
         <View style={{flex: 1, marginTop: Platform.OS === 'ios' ? 34 : 0}}>
             <View style={myStyles.page}>
@@ -198,10 +198,25 @@ export default class BasicFlatList extends Component {
                     </View>
                 </TouchableHighlight>
             </View>
+            <ModalDropdown
+                    showsVerticalScrollIndicator={false}
+                    style={myStyles.modalFilter}
+                    textStyle={myStyles.textFilter}
+                    dropdownStyle={myStyles.dropdownFilter}
+                    dropdownTextStyle = {myStyles.dropdownTextFilter}
+                    defaultValue ='Выберите важность задачи'
+                    animated={false}
+                    options={['all','normal', 'important', 'very important']}
+                    onSelect = {(idx, value) =>this.setState({filter:value})}
+                />
             <FlatList 
                 style={{flex:1}}
                 ref={"flatList"}
-                data={flatListData}
+                data={flatListData.filter((el)=>{
+                    return this.state.filter!='all'?(el.priority == this.state.filter):
+                        (el.priority == 'normal')|(el.priority == 'important')
+                        |(el.priority == 'very important')
+                })}
                 renderItem={({item, index})=>{
                     //console.log(`Item = ${JSON.stringify(item)}, index = ${index}`);
                     return (

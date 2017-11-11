@@ -15,6 +15,12 @@ var myStyles = React.StyleSheet.create({
         shadowRadius: 10,
         width: screen.width,
     },
+    flatListItem: {
+        color: 'white',
+        padding: 10,
+        fontSize: 17,
+        fontStyle:'italic'    
+    },
     header:{
         fontSize: 18,
         fontWeight: 'bold',
@@ -79,12 +85,6 @@ var myStyles = React.StyleSheet.create({
         alignItems: 'center',
         height: 64
     },
-    flatListItem: {
-        color: 'white',
-        padding: 10,
-        fontSize: 17,
-        fontStyle:'italic'    
-    },
     touchable: {
         flex:1,
         flexDirection:'row', 
@@ -121,7 +121,31 @@ var myStyles = React.StyleSheet.create({
         height: 40,
         borderRadius: 6,
         backgroundColor: 'green'
-    }
+    },
+    modalFilter: {
+        height: 40,
+        borderBottomColor: 'gray',
+        borderBottomWidth: 1,
+    },
+    textFilter:{
+        height:40,
+        textAlign:'center',
+        justifyContent:'center',
+        fontSize:18,
+        textAlignVertical:'center'
+    },
+    dropdownTextFilter:{
+        borderWidth:0.2,
+        fontSize:18,
+        textAlign:'center'
+    },
+    dropdownFilter: {
+        width:screen.width,
+        height: 175,
+        borderColor: 'cornflowerblue',
+        borderWidth: 2,
+        borderRadius: 3,
+    },
 })
 
 module.exports = myStyles;
