@@ -40,10 +40,15 @@ export default class DetailModal extends Component {
                     // alert("Modal closed");
                 }}
             >
-                <Text style={myStyles.header}>"{this.state.detailName}"</Text>           
-                <Text style={myStyles.textDescription}
-                    >Task description: {this.state.detailDescription}</Text>                 
-                <Text style={myStyles.textInput}>Task's priority : {this.state.detailPriority}</Text>
+                <Text style={myStyles.header}>
+                    "{this.state.detailName}"
+                </Text>           
+                <Text style={myStyles.textDescription}>
+                    Task description: {this.state.detailDescription}
+                </Text>                 
+                <Text style={myStyles.textInput}>
+                    Task's priority : {this.state.detailPriority}
+                </Text>
                 <Text style={myStyles.textInput}>
                     Task must complete: {this.state.detailMustComplete}
                 </Text>

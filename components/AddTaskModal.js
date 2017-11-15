@@ -4,16 +4,14 @@ import {
     TimePickerAndroid,DatePickerAndroid,
     TextInput, Keyboard,
     TouchableWithoutFeedback,
+    AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Modal from 'react-native-modalbox';
 import ModalDropdown from 'react-native-modal-dropdown';
 import Button from 'react-native-button';
-
-import flatListData from '../data/flatListData';
 import myStyles from './styles'
-
-  
+ 
 var screen = Dimensions.get('window');
 export default class AddTaskModal extends Component {
     constructor(props) {
@@ -41,10 +39,11 @@ export default class AddTaskModal extends Component {
             mode:'default',
             minDate: new Date()
           });
+
           if (action == DatePickerAndroid.dateSetAction){
             this.setState({year:year,month:month+1, day:day});
             this.setState({myDate:`${this.state.day}/${this.state.month}/${this.state.year}`});
-          }else{
+          } else {
             alert('You have been close the Date')
           }
         } catch ({code, message}) {
@@ -59,9 +58,10 @@ export default class AddTaskModal extends Component {
             minute: 0,
             is24Hour: true,
           });
+
           if (action !== TimePickerAndroid.timeSetAction){
               alert('Вы не выбрали время')
-          }else{
+          } else {
             this.setState({hour:hour, minutes:minute}) ;
             this.setState({myTime:`${this.state.hour}:${this.state.minutes}`});
             this.setState({newMustComplete:this.state.myDate +' '+this.state.myTime});
@@ -80,6 +80,18 @@ export default class AddTaskModal extends Component {
         }    
     }
 
+    async addTask(value){
+        try {
+            let getData = await AsyncStorage.getItem('myData');
+            let parseData = JSON.parse(getData);
+            parseData.push(value)
+            AsyncStorage.setItem('myData', JSON.stringify(parseData))
+            this.props.parentFlatList.setState({isChanged:true})
+        } catch (error) {
+           console.log(error) 
+        }
+    }
+
     render() {
         const clearState = {};
         return (
@@ -91,11 +103,11 @@ export default class AddTaskModal extends Component {
                 onClosed={() => {
                     // alert("Modal closed");
                 }}>
-                {/* Touchable needs here to fix Keyboard bug */}
+                {/* Touchable needs here to fix Keyboard bug on virtual emulator */}
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={{flex:1}}>
                 <Text style={myStyles.header}>
-                Adding new Task
+                    Adding new Task
                 </Text>
                 <TextInput
                     returnKeyType='next'
@@ -105,9 +117,11 @@ export default class AddTaskModal extends Component {
                     placeholder="Enter new Task's name"             
                 />
                 <TextInput
+                    multiline = {true}
+                    autoGrow = {true}
                     returnKeyType='next'
                     underlineColorAndroid='transparent'
-                    style={myStyles.textInput}
+                    style={myStyles.textDescription}
                     onChangeText={(text) => this.setState({ newDescription: text })}
                     placeholder="Enter new Task's description"
                     
@@ -171,12 +185,13 @@ export default class AddTaskModal extends Component {
                                 dateComplete:'',
                                 isComplete:false,
                             };    
-                            flatListData.push(newTask);    
-                            this.props.parentFlatList.refreshFlatList(newKey);
+                            this.addTask(newTask);
+                            this.props.parentFlatList.scrollFlatList();
+
                             Object.keys(this.state).forEach(stateKey => {
-                            clearState[stateKey] = '';
+                                clearState[stateKey] = '';
                             });
-                            this.setState(clearState);                                
+                            this.setState(clearState);                             
                             this.refs.myModal.close();                                                                       
                         }}>
                     Save

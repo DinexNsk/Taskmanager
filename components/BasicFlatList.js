@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { 
     AppRegistry, FlatList, StyleSheet,
-    Text, View, Image, Alert, Platform,
-    TouchableHighlight, StatusBar, Dimensions, Button,  } from 'react-native';
+    Text, View, Image, Alert, Platform,AsyncStorage,
+    TouchableHighlight, StatusBar, Dimensions, Button,
+    TouchableWithoutFeedback  } from 'react-native';
 import flatListData from '../data/flatListData';
 import Swipeout from 'react-native-swipeout';
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -25,19 +26,25 @@ class FlatListItem extends Component {
         };
     }
 
-    refreshFlatListItem = () => {
-        this.setState((prevState) => {
-            return {
-                numberOfRefresh: prevState.numberOfRefresh + 1
-            };
-        });        
+    async deleteTask(value){
+        try {
+            let getData = await AsyncStorage.getItem("myData")
+            let deletingData = JSON.parse(getData)
+
+            deletingData.splice(value, 1)
+            AsyncStorage.setItem("myData", JSON.stringify(deletingData))
+            this.props.parentFlatList.setState({isChanged:true})
+        } catch (error) {
+            console.log(error)
+        }
+        
     }
     render() { 
         const swipeSettings = {
             buttonWidth:50,
             autoClose: true,
             onClose: (secId, rowId, direction) => {
-                if(this.state.activeRowKey != null) {
+                if (this.state.activeRowKey != null) {
                     this.setState({ activeRowKey: null });
                 }              
             },          
@@ -47,8 +54,8 @@ class FlatListItem extends Component {
             right: [
                 { 
                     onPress: () => {                            
-                        // alert("Update");
-                        this.props.parentFlatList.refs.editModal.showEditModal(flatListData[this.props.index], this);
+                        this.props.parentFlatList.refs.editModal.showEditModal(
+                            this.props.parentFlatList.state.myData[this.props.index], this);
                     }, 
                     text: 'Edit', type: 'primary' 
                 },
@@ -61,9 +68,7 @@ class FlatListItem extends Component {
                             [                              
                               {text: 'No', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
                               {text: 'Yes', onPress: () => {        
-                                flatListData.splice(this.props.index, 1); 
-                                //Refresh FlatList ! 
-                                this.props.parentFlatList.refreshFlatList(deletingRow);
+                                this.deleteTask(this.props.index); 
                               }},
                             ],
                             { cancelable: true }
@@ -83,7 +88,7 @@ class FlatListItem extends Component {
                 title='detail'
                 onPress={()=>{
                 this.props.parentFlatList.refs.detailModal.
-                    showDetailModal(flatListData[this.props.index])}
+                    showDetailModal( this.props.parentFlatList.state.myData[this.props.index])}
                 }>  
                 <View style={{flex: 1,flexDirection:'column'}}>           
                     <View style={{
@@ -91,14 +96,14 @@ class FlatListItem extends Component {
                             flexDirection:'row',                
                             backgroundColor: '#d35400',
                     }}>             
-                        <View style={{
+                        <View style = {{
                                 flex: 1,
                                 flexDirection:'row',   
                                 alignContent:'center',
                                 alignItems:'center',                
                             }}>
                             <View style={{flex: 1}}>
-                                <Text style={{
+                                <Text style = {{
                                     fontSize:20,
                                     marginLeft:5,
                                     borderWidth:2,
@@ -161,79 +166,126 @@ class FlatListItem extends Component {
 export default class BasicFlatList extends Component {
     constructor(props) {
         super(props);     
-        this.state = ({
+        this.state =({
             deletedRowKey: null,
-            filter:'all'       
+            filter:'all',
+            myData:'',
+            isChanged:false
         });
         this._onPressAdd = this._onPressAdd.bind(this);        
     }
-    refreshFlatList = (activeKey) => {
-        this.setState((prevState) => {
-            return {
-                deletedRowKey: activeKey
-            };
-        });
+
+    scrollFlatList(){
         this.refs.flatList.scrollToEnd();
     }
+
     _onPressAdd () {
-        // alert("You add Item");
         this.refs.addTaskModal.showAddTaskModal();
     }
+
+    componentWillMount(){
+        try {
+            this.asyncData()
+        } catch (error) {
+            console.log(error)
+        }  
+    }
+
+    componentDidUpdate(){
+        if ( this.state.isChanged == true ){
+            this.modifiedData()
+        }
+    }
+
+    //init value for the state.myData before render
+    async asyncData(){
+        try {
+            let getData = await AsyncStorage.getItem("myData");
+            // true only on the first run of program
+            if ( getData == null ){       
+                console.log('Async is empty')  
+                AsyncStorage.setItem('myData', JSON.stringify(flatListData));
+                let parsedData = JSON.parse(getData);
+                this.setState({ myData:parsedData });
+            } else {
+                let parsedData = JSON.parse(getData);
+                this.setState({ myData:parsedData })
+                console.log('Something already in the AsyncStorage');
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //call it when something has changed
+    async modifiedData(){
+        try {
+            let getData = await AsyncStorage.getItem("myData");
+            let parsedData = JSON.parse(getData);
+            let filteredData = parsedData.filter((el)=>{
+                return this.state.filter!='all'?(el.priority == this.state.filter):
+            (el.priority == 'normal')|(el.priority == 'important')
+            |(el.priority == 'very important')
+            })
+            this.setState({ myData:filteredData, isChanged:false })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     render() {
       return (
         <View style={{flex: 1, marginTop: Platform.OS === 'ios' ? 34 : 0}}>
             <View style={myStyles.page}>
-                <TouchableHighlight 
+                <TouchableWithoutFeedback 
                     style = {myStyles.touchable}
-                    underlayColor='#d35400'
-                    onPress={this._onPressAdd}
+                    onPress = {this._onPressAdd}
                     >
-                    <View style={myStyles.page}>
-                        <Text style={myStyles.textBasic}>
+                    <View style = {myStyles.page}>
+                        <Text style = {myStyles.textBasic}>
                             Добавить задачу
                         </Text>
                         <Image
-                            style={{width: 35, height: 35}}
-                            source={require('../icons/icons-add.png')}/>
+                            style = {{width: 35, height: 35}}
+                            source = {require('../icons/icons-add.png')}/>
                     </View>
-                </TouchableHighlight>
+                </TouchableWithoutFeedback>
             </View>
+            {/* dropdown filter */}
             <ModalDropdown
-                    showsVerticalScrollIndicator={false}
-                    style={myStyles.modalFilter}
-                    textStyle={myStyles.textFilter}
-                    dropdownStyle={myStyles.dropdownFilter}
+                    showsVerticalScrollIndicator = {false}
+                    style = {myStyles.modalFilter}
+                    textStyle = {myStyles.textFilter}
+                    dropdownStyle = {myStyles.dropdownFilter}
                     dropdownTextStyle = {myStyles.dropdownTextFilter}
-                    defaultValue ='Выберите важность задачи'
-                    animated={false}
-                    options={['all','normal', 'important', 'very important']}
-                    onSelect = {(idx, value) =>this.setState({filter:value})}
+                    defaultValue = 'Выберите важность задачи'
+                    animated = {false}
+                    options = {['all', 'normal', 'important', 'very important']}
+                    onSelect = {(idx, value) =>this.setState({ filter:value, isChanged:true })}
                 />
             <FlatList 
-                style={{flex:1}}
-                ref={"flatList"}
-                data={flatListData.filter((el)=>{
-                    return this.state.filter!='all'?(el.priority == this.state.filter):
-                        (el.priority == 'normal')|(el.priority == 'important')
-                        |(el.priority == 'very important')
-                })}
-                renderItem={({item, index})=>{
-                    //console.log(`Item = ${JSON.stringify(item)}, index = ${index}`);
+                style = {{flex:1}}
+                ref = {"flatList"}
+                data = {this.state.myData}
+                parentFlatList = {this}
+                renderItem = {({item, index}) => {
                     return (
-                    <FlatListItem item={item} index={index} parentFlatList={this}>
-
+                    <FlatListItem 
+                        item = {item} 
+                        index = {index} 
+                        parentFlatList = {this}
+                    >
                     </FlatListItem>);
                 }}
                 >
 
             </FlatList>
-            <AddTaskModal ref={'addTaskModal'} parentFlatList={this} >
+            <AddTaskModal ref = {'addTaskModal'} parentFlatList = {this} >
 
             </AddTaskModal>
-            <EditModal ref={'editModal'} parentFlatList={this}>
+            <EditModal ref = {'editModal'} parentFlatList = {this}>
 
             </EditModal>
-            <DetailModal ref={'detailModal'} parentFlatList={this}>
+            <DetailModal ref = {'detailModal'} parentFlatList = {this}>
 
             </DetailModal>
         </View>

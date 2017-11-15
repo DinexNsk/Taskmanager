@@ -5,7 +5,7 @@ import {
     DatePickerAndroid,
     TimePickerAndroid,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard, AsyncStorage
 } from 'react-native';
 import Modal from 'react-native-modalbox';
 import Button from 'react-native-button';
@@ -15,7 +15,6 @@ import moment from 'moment';
 import 'moment-timezone';
 
 import myStyles from './styles'
-import flatListData from '../data/flatListData';
 import ModalDropdown from 'react-native-modal-dropdown';
 
 moment.tz.setDefault('Asia/Novosibirsk')
@@ -34,10 +33,10 @@ export default class EditModal extends Component {
             mode:'default',
             minDate: new Date()
           });
-          if (action == DatePickerAndroid.dateSetAction){
-            this.setState({year:year,month:month+1, day:day});
+          if ( action == DatePickerAndroid.dateSetAction ){
+            this.setState({ year:year,month:month+1, day:day });
             this.setState({myDate:`${this.state.day}/${this.state.month}/${this.state.year}`});
-          }else{
+          } else {
             alert('You have been close the Date')
           }
         } catch ({code, message}) {
@@ -54,7 +53,7 @@ export default class EditModal extends Component {
           });
           if (action !== TimePickerAndroid.timeSetAction){
               alert('Вы не выбрали время')
-          }else{
+          } else {
             this.setState({hour:hour, minutes:minute}) ;
             this.setState({myTime:`${this.state.hour}:${this.state.minutes}`});
             this.setState({editMustComplete:this.state.myDate +' '+this.state.myTime});
@@ -80,6 +79,7 @@ export default class EditModal extends Component {
             editDateComplete:dateComplete,
         })
     }
+    //get existing data for current item
     showEditModal = (editingTask, flatlistItem) => {                
         this.setState({
             key: editingTask.key,
@@ -93,9 +93,34 @@ export default class EditModal extends Component {
         });
         this.refs.myModal.open();
     } 
+
     generateKey = (numberOfCharacters) => {
         return require('random-string')({length: numberOfCharacters});        
     }
+
+    async editTask(){
+        try {
+            let getData = await AsyncStorage.getItem('myData');
+            let parseData = JSON.parse(getData);
+            var foundIndex = parseData.findIndex(item => this.state.key == item.key);
+
+            if (foundIndex < 0) {
+                return console.log("Not found");
+            }
+            parseData[foundIndex].name = this.state.editName;
+            parseData[foundIndex].description = this.state.editDescription;
+            parseData[foundIndex].priority = this.state.editPriority;
+            parseData[foundIndex].mustComplete = this.state.editMustComplete;
+            parseData[foundIndex].isComplete = this.state.editTaskIsComplete;
+            parseData[foundIndex].dateComplete = this.state.editDateComplete;
+            
+            AsyncStorage.setItem('myData', JSON.stringify(parseData))
+            this.props.parentFlatList.setState({isChanged:true})
+        } catch (error) {
+           console.log(error) 
+        }
+    }
+
     render() {
         return (
             <Modal
@@ -109,86 +134,76 @@ export default class EditModal extends Component {
             >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{flex:1}}>
-                <Text style={myStyles.header}>Editing task</Text>
+                <Text style={myStyles.header}> Editing task </Text>
                 <TextInput
-                    underlineColorAndroid='transparent'
-                    style={myStyles.textInput}           
-                    onChangeText={(text) => this.setState({ editName: text })}
-                    placeholder="Edit task's name"
-                    value={this.state.editName}                 
+                    underlineColorAndroid = 'transparent'
+                    style = {myStyles.textInput}           
+                    onChangeText = {(text) => this.setState({ editName: text })}
+                    placeholder = "Edit task's name"
+                    value = {this.state.editName}                 
                 />
                 <TextInput
-                    underlineColorAndroid='transparent'
-                    style={myStyles.textInput}           
-                    onChangeText={(text) => this.setState({ editDescription: text })}
-                    placeholder="Edit task's description"
-                    value={this.state.editDescription}                 
+                    underlineColorAndroid = 'transparent'
+                    multiline = {true}
+                    autoGrow = {true}
+                    style = {myStyles.textDescription}           
+                    onChangeText = {(text) => this.setState({ editDescription: text })}
+                    placeholder = "Edit task's description"
+                    value = {this.state.editDescription}                 
                 />
                 <ModalDropdown
-                    showsVerticalScrollIndicator={false}
-                    style={myStyles.textInputNoSize}
-                    textStyle={myStyles.text}
-                    dropdownStyle={myStyles.dropdown}
+                    showsVerticalScrollIndicator = {false}
+                    style = {myStyles.textInputNoSize}
+                    textStyle = {myStyles.text}
+                    dropdownStyle = {myStyles.dropdown}
                     dropdownTextStyle = {myStyles.dropdownText}
-                    defaultValue ={this.state.editPriority}
-                    animated={false}
-                    options={['normal', 'important', 'very important']}
+                    defaultValue = {this.state.editPriority}
+                    animated = {false}
+                    options = {['normal', 'important', 'very important']}
                     onSelect = {(idx, value) => this.setState({editPriority:value})}
                 />
-                <View style={[myStyles.textInputNoSize,myStyles.dateTime]}>
+                <View style = {[myStyles.textInputNoSize, myStyles.dateTime]}>
                     <Text 
-                        style={{width:60, height:60}}
+                        style = {{width:60, height:60}}
                         onPress = {()=>this._dateTime()}>
-                    <Icon name="calendar"
-                        size={40}
-                        color='black'
+                    <Icon name = "calendar"
+                        size = {40}
+                        color = 'black'
                         />
                     </Text>
-                    <Text style={myStyles.textInput}>
+                    <Text style = {myStyles.textInput}>
                         {this.state.editMustComplete}
                     </Text>
                 </View>
                 <CheckBox
-                    containerStyle={myStyles.textInputNoSize}
+                    containerStyle = {myStyles.textInputNoSize}
                     checked = {this.state.editTaskIsComplete}
                     onPress = {this._checkBox}
-                    title={this.state.editTaskIsComplete?
+                    title = { this.state.editTaskIsComplete ?
                         `Задача выполнена :${this.state.editDateComplete}`:
-                        'Задача не выполнена'}/>
-                        
-                <View style={{
+                        'Задача не выполнена'}
+                />    
+                <View style = {{
                     flex:1,
                     flexDirection:'row', 
                     justifyContent:'center'}}>
                     <Button
-                        style={{fontSize: 18, color: 'white' }}
-                        containerStyle={myStyles.buttonCancel}
-                        onPress={() => {                              
+                        style = {{fontSize: 18, color: 'white' }}
+                        containerStyle = { myStyles.buttonCancel }
+                        onPress = {() => {                              
                             this.refs.myModal.close();                                                                       
                         }}>
                         Отмена
                     </Button>
                 <Button
-                    style={{ fontSize: 18, color: 'white' }}
-                        containerStyle={myStyles.buttonOk}
-                    onPress={() => {
+                    style = {{ fontSize: 18, color: 'white' }}
+                        containerStyle = {myStyles.buttonOk}
+                    onPress = {() => {
                          if (this.state.editName.length == 0 || this.state.editDescription.length == 0) {
                             alert("You must enter task's name and description");
                             return;
-                        }       
-                        //update existing task
-                        var foundIndex = flatListData.findIndex(item => this.state.key == item.key);
-                        if (foundIndex < 0) {
-                            return; //not found
                         }
-                        flatListData[foundIndex].name = this.state.editName;
-                        flatListData[foundIndex].description = this.state.editDescription;
-                        flatListData[foundIndex].priority = this.state.editPriority;
-                        flatListData[foundIndex].mustComplete = this.state.editMustComplete;
-                        flatListData[foundIndex].isComplete = this.state.editTaskIsComplete;
-                        flatListData[foundIndex].dateComplete = this.state.editDateComplete;
-                        //Refresh flatlist item
-                        this.state.flatlistItem.refreshFlatListItem();
+                        this.editTask();
                         this.refs.myModal.close();                                                                       
                     }}>
                     Save
